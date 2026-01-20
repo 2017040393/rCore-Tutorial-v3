@@ -29,7 +29,7 @@ pub fn clear_bss() {
         safe fn sbss();
         safe fn ebss();
     }
-    (sbss as usize..ebss as usize).for_each(|a| unsafe { (a as *mut u8).write_volatile(0) });
+    (sbss as *const () as usize..ebss as *const () as usize).for_each(|a| unsafe { (a as *mut u8).write_volatile(0) });
 }
 
 /// the rust entry-point of os
@@ -52,21 +52,21 @@ pub fn rust_main() -> ! {
     println!("[kernel] Hello, world!");
     trace!(
         "[kernel] .text [{:#x}, {:#x})",
-        stext as usize, etext as usize
+        stext as *const () as usize, etext as *const () as usize
     );
     debug!(
         "[kernel] .rodata [{:#x}, {:#x})",
-        srodata as usize, erodata as usize
+        srodata as *const () as usize, erodata as *const () as usize
     );
     info!(
         "[kernel] .data [{:#x}, {:#x})",
-        sdata as usize, edata as usize
+        sdata as *const () as usize, edata as *const () as usize
     );
     warn!(
         "[kernel] boot_stack top=bottom={:#x}, lower_bound={:#x}",
-        boot_stack_top as usize, boot_stack_lower_bound as usize
+        boot_stack_top as *const () as usize, boot_stack_lower_bound as *const () as usize
     );
-    error!("[kernel] .bss [{:#x}, {:#x})", sbss as usize, ebss as usize);
+    error!("[kernel] .bss [{:#x}, {:#x})", sbss as *const () as usize, ebss as *const () as usize); 
 
     // CI autotest success: sbi::shutdown(false)
     // CI autotest failed : sbi::shutdown(true)
