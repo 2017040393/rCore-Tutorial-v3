@@ -6,10 +6,9 @@
 //! details.)
 //!
 //! We then call [`println!`] to display `Hello, world!`.
-
+#![no_std]
 #![deny(missing_docs)]
 #![deny(warnings)]
-#![no_std]
 #![no_main]
 
 use core::arch::global_asm;
@@ -23,13 +22,14 @@ mod sbi;
 
 global_asm!(include_str!("entry.asm"));
 
-/// clear BSS segment
+/// clear BSS segment分
 pub fn clear_bss() {
     unsafe extern "C" {
         safe fn sbss();
         safe fn ebss();
     }
-    (sbss as *const () as usize..ebss as *const () as usize).for_each(|a| unsafe { (a as *mut u8).write_volatile(0) });
+    (sbss as *const () as usize..ebss as *const () as usize)
+        .for_each(|a| unsafe { (a as *mut u8).write_volatile(0) });
 }
 
 /// the rust entry-point of os
@@ -66,7 +66,10 @@ pub fn rust_main() -> ! {
         "[kernel] boot_stack top=bottom={:#x}, lower_bound={:#x}",
         boot_stack_top as *const () as usize, boot_stack_lower_bound as *const () as usize
     );
-    error!("[kernel] .bss [{:#x}, {:#x})", sbss as *const () as usize, ebss as *const () as usize); 
+    error!(
+        "[kernel] .bss [{:#x}, {:#x})",
+        sbss as *const () as usize, ebss as *const () as usize
+    );
 
     // CI autotest success: sbi::shutdown(false)
     // CI autotest failed : sbi::shutdown(true)
