@@ -23,3 +23,8 @@ easy-fs-fuse/target/*
 tools/
 pushall.sh
 *.bak
+
+
+# Added by cargo
+
+/target
